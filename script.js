@@ -1,5 +1,4 @@
 // Game constants
-const TILE_SIZE = 50;
 const VIEWPORT_SIZE = 15; //grid t x t
 const TILE_TYPES = ['grass', 'water', 'stone', 'dirt'];
 const KEY_COOLDOWN = 500; // 200ms cooldown for keyboard inputs
@@ -19,6 +18,25 @@ const upBtn = document.getElementById('up-btn');
 const downBtn = document.getElementById('down-btn');
 const leftBtn = document.getElementById('left-btn');
 const rightBtn = document.getElementById('right-btn');
+
+const gamecontainerElement = document.getElementById('game-container');
+const isMobile = window.matchMedia('(max-width: 767px)').matches;
+let baseTile = 50;
+if(isMobile){
+  baseTile=30;
+}
+gamecontainerElement.style.width = (baseTile*11)+'px';
+gamecontainerElement.style.height = (baseTile*11)+'px';
+const TILE_SIZE = parseFloat(gamecontainerElement.style.width)/(VIEWPORT_SIZE-4);
+characterElement.style.width = TILE_SIZE + "px";
+characterElement.style.height = TILE_SIZE + "px";
+characterElement.style.lineHeight = TILE_SIZE + "px";
+characterElement.style.fontSize = (TILE_SIZE - (10*(baseTile/25))) + 'px';
+characterElement.style.left = (TILE_SIZE*5) + 'px';
+characterElement.style.top = (TILE_SIZE*5) + 'px';
+characterElement.style.textAlign = 'center';
+mapElement.style.top = (baseTile*-2)+'px';
+mapElement.style.left = (baseTile*-2)+'px';
 
 // Initialize the game
 function initGame() {
@@ -99,7 +117,7 @@ function generateWorld() {
 
       // Ensure the starting position is grass
       if (x === playerX && y === playerY) {
-        worldMap[y][x] = 'grass';
+        worldMap[y][x] = 'none';
       }
     }
   }
@@ -135,6 +153,8 @@ function renderMap() {
       tile.className = `tile ${worldMap[y][x]}`;
       tile.style.left = `${x * TILE_SIZE}px`;
       tile.style.top = `${y * TILE_SIZE}px`;
+      tile.style.width=TILE_SIZE+'px';
+      tile.style.height=TILE_SIZE+'px';
       mapElement.appendChild(tile);
     }
   }
