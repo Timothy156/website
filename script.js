@@ -1,14 +1,14 @@
 // Game constants
 const TILE_SIZE = 50;
-const VIEWPORT_SIZE = 11; // 11x11 grid visible at a time
+const VIEWPORT_SIZE = 15; //grid t x t
 const TILE_TYPES = ['grass', 'water', 'stone', 'dirt'];
-const KEY_COOLDOWN = 200; // 200ms cooldown for keyboard inputs
+const KEY_COOLDOWN = 500; // 200ms cooldown for keyboard inputs
 
 // Game state
-const mapSize = 100; // 100x100 world
-let playerX = Math.floor(mapSize / 2); // Center of the map
-let playerY = Math.floor(mapSize / 2);
-let worldMap = [];
+const mapSize = 50; // 100x100 world
+let playerX = 0; // Center of the map
+let playerY = 0;
+let worldMap = {};
 let lastKeyTime = 0; // Track last keyboard movement time
 
 // DOM elements
@@ -24,16 +24,40 @@ const rightBtn = document.getElementById('right-btn');
 function initGame() {
   // Generate a random world map
   generateWorld();
-
+  console.log(worldMap);
   // Render the initial view
   renderMap();
   updateCoordinates();
 
   // Set up event listeners for buttons
-  upBtn.addEventListener('click', () => movePlayer(0, -1));
-  downBtn.addEventListener('click', () => movePlayer(0, 1));
-  leftBtn.addEventListener('click', () => movePlayer(-1, 0));
-  rightBtn.addEventListener('click', () => movePlayer(1, 0));
+  upBtn.addEventListener('click', () => {
+    const now = Date.now();
+    if (now - lastKeyTime < KEY_COOLDOWN) return;
+    movePlayer(0, -1)
+    lastKeyTime = now;
+  }
+);
+  downBtn.addEventListener('click', () =>  {
+    const now = Date.now();
+    if (now - lastKeyTime < KEY_COOLDOWN) return;
+    movePlayer(0, 1)
+    lastKeyTime = now;
+  }
+);
+  leftBtn.addEventListener('click', () =>  {
+    const now = Date.now();
+    if (now - lastKeyTime < KEY_COOLDOWN) return;
+    movePlayer(-1,0)
+    lastKeyTime = now;
+  }
+);
+  rightBtn.addEventListener('click', () =>  {
+    const now = Date.now();
+    if (now - lastKeyTime < KEY_COOLDOWN) return;
+    movePlayer(1,0)
+    lastKeyTime = now;
+  }
+);
 
   // Keyboard controls with cooldown
   document.addEventListener('keydown', (e) => {
@@ -63,9 +87,9 @@ function initGame() {
 
 // Generate a random world map
 function generateWorld() {
-  for (let y = 0; y < mapSize; y++) {
-    worldMap[y] = [];
-    for (let x = 0; x < mapSize; x++) {
+  for (let y = 0-mapSize; y < mapSize; y++) {
+    worldMap[y] = {};
+    for (let x = 0-mapSize; x < mapSize; x++) {
       // Random tile type, weighted towards grass
       const rand = Math.random();
       if (rand < 0.6) worldMap[y][x] = 'grass';
@@ -94,8 +118,8 @@ function renderMap() {
 
   // Calculate the visible area based on player position
   const halfView = Math.floor(VIEWPORT_SIZE / 2);
-  const startX = Math.max(0, playerX - halfView);
-  const startY = Math.max(0, playerY - halfView);
+  const startX = Math.max(0-mapSize, playerX - halfView);
+  const startY = Math.max(0-mapSize, playerY - halfView);
   const endX = Math.min(mapSize - 1, playerX + halfView);
   const endY = Math.min(mapSize - 1, playerY + halfView);
 
@@ -122,7 +146,7 @@ function movePlayer(dx, dy) {
   const newY = playerY + dy;
 
   // Check boundaries
-  if (newX < 0 || newX >= mapSize || newY < 0 || newY >= mapSize) {
+  if (newX < (0-mapSize) || newX >= mapSize || newY < (0-mapSize) || newY >= mapSize) {
     return;
   }
 
